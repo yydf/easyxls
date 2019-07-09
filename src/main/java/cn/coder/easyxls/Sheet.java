@@ -10,6 +10,14 @@ public final class Sheet {
 	private final List<Object> titles = new ArrayList<>();
 	private final List<Row> dataRows = new ArrayList<>();
 
+	/**
+	 * 新建一个工作表
+	 * 
+	 * @param name
+	 *            工作表
+	 * @param id
+	 *            唯一ID
+	 */
 	public Sheet(String name, int id) {
 		this.name = name;
 		this.id = id;

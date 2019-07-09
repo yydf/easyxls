@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ZipUtils {
+public final class ZipUtils {
 	public static void putEntry(ZipOutputStream zipStream, String entry, String resource) throws IOException {
 		InputStream is = ZipUtils.class.getClassLoader().getResourceAsStream(resource);
 		byte[] data = new byte[1024];

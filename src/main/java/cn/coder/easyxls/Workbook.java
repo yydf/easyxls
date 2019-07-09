@@ -11,6 +11,12 @@ import org.slf4j.LoggerFactory;
 import cn.coder.easyxls.util.XLSUtils;
 import cn.coder.easyxls.util.ZipUtils;
 
+/**
+ * 工作簿
+ * 
+ * @author YYDF
+ *
+ */
 public final class Workbook {
 	private static final Logger logger = LoggerFactory.getLogger(Workbook.class);
 

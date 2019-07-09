@@ -10,7 +10,7 @@ import java.util.List;
 import cn.coder.easyxls.Row;
 import cn.coder.easyxls.Sheet;
 
-public class XLSUtils {
+public final class XLSUtils {
 	private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 	private static final String XML_WORKBOOK = "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><fileVersion appName=\"xl\" lastEdited=\"3\" lowestEdited=\"5\"	rupBuild=\"9302\" /><workbookPr /><bookViews><workbookView windowWidth=\"22943\" windowHeight=\"10067\" /></bookViews><sheets>%s</sheets><calcPr calcId=\"144525\" /></workbook>";
 	private static final String Relationship_SHEET = "<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet%d.xml\"/>";
