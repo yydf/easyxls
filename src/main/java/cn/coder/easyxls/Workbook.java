@@ -3,77 +3,94 @@ package cn.coder.easyxls;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipOutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.coder.easyxls.util.XLSUtils;
 import cn.coder.easyxls.util.ZipUtils;
 
-public class Workbook {
+public final class Workbook {
+	private static final Logger logger = LoggerFactory.getLogger(Workbook.class);
 
-	private byte[] workBook;
-	private final List<Cell> titleCells = new ArrayList<>();
-	private final List<Cell[]> dataCells = new ArrayList<>();
+	private Sheet[] sheets;
+	private Sheet defaultSheet;
 
-	public Workbook(String defaultSheet) {
-		this.workBook = XLSUtils.getWorkbook(defaultSheet);
+	public Workbook(String sheet) {
+		this.defaultSheet = new Sheet(sheet, 1);
+		sheets = new Sheet[] { this.defaultSheet };
+		if (logger.isDebugEnabled())
+			logger.debug("Add default sheet:{}", this.defaultSheet.getName());
 	}
 
 	public void addTitle(String title) {
-		this.titleCells.add(new Cell(title, this.titleCells.size()));
+		this.defaultSheet.addTitle(title);
 	}
 
 	public void addData(Object... data) {
-		if (data.length == 0)
-			return;
-		Cell[] cells = new Cell[data.length];
-		for (int i = 0; i < data.length; i++) {
-			if (data[i] == null)
-				cells[i] = new Cell("", i);
-			else
-				cells[i] = new Cell(data[i].toString(), i);
-		}
-		this.dataCells.add(cells);
+		this.defaultSheet.addData(data);
 	}
 
 	public boolean write(OutputStream outputStream) {
-		if (workBook == null)
-			return false;
+		long start = System.currentTimeMillis();
+		ZipOutputStream zipStream = null;
+		ArrayList<String> strings = null;
 		try {
-			ArrayList<String> strings = new ArrayList<>();
-			byte[] sheetData = XLSUtils.getSheet(titleCells, dataCells, strings);
-			byte[] stringsData = XLSUtils.getStrings(strings);
-			ZipOutputStream zipStream = new ZipOutputStream(outputStream);
-			ZipUtils.putEntry(zipStream, "_rels/.rels", "_rels.rels.xml");
-			ZipUtils.putEntry(zipStream, "docProps/app.xml", "app.xml");
-			ZipUtils.putEntry(zipStream, "docProps/core.xml", "core.xml");
-			ZipUtils.putEntry(zipStream, "docProps/custom.xml", "custom.xml");
-			ZipUtils.putStreamEntry(zipStream, "xl/workbook.xml", this.workBook);
-			ZipUtils.putEntry(zipStream, "xl/styles.xml", "styles.xml");
-			ZipUtils.putStreamEntry(zipStream, "xl/worksheets/sheet1.xml", sheetData);
-			ZipUtils.putStreamEntry(zipStream, "xl/sharedStrings.xml", stringsData);
-			ZipUtils.putEntry(zipStream, "xl/_rels/workbook.xml.rels", "workbook.xml.rels.xml");
-			ZipUtils.putEntry(zipStream, "xl/worksheets/sheet2.xml", "sheet2.xml");
-			ZipUtils.putEntry(zipStream, "xl/worksheets/sheet3.xml", "sheet3.xml");
-			ZipUtils.putEntry(zipStream, "xl/theme/theme1.xml", "theme1.xml");
-			ZipUtils.putEntry(zipStream, "[Content_Types].xml", "Content_Types.xml");
-			zipStream.close();
+			byte[] workBook = XLSUtils.getWorkbook(sheets);
+			byte[] workBookRels = XLSUtils.getWorkbookRels(sheets);
+			byte[] app = XLSUtils.getApp(sheets);
+			zipStream = ZipUtils.createZip(outputStream, workBook, workBookRels, app);
+
+			strings = new ArrayList<>();
+			for (Sheet sheet : sheets) {
+				putSheet(zipStream, strings, sheet);
+			}
+			putStrings(zipStream, strings);
+
 			return true;
 		} catch (IOException e) {
+			if (logger.isErrorEnabled())
+				logger.error("Create xlsx file faild", e);
 			return false;
 		} finally {
-			try {
-				outputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (strings != null) {
+				strings.clear();
 			}
+			ZipUtils.close(zipStream, outputStream);
+			if (logger.isDebugEnabled())
+				logger.debug("Created xlsx file with {}ms", (System.currentTimeMillis() - start));
 		}
 	}
 
-	public void close() {
-		this.titleCells.clear();
-		this.dataCells.clear();
-		this.workBook = null;
+	private static void putSheet(ZipOutputStream zipStream, ArrayList<String> strings, Sheet sheet) throws IOException {
+		byte[] sheetData = XLSUtils.getSheet(sheet, strings);
+		ZipUtils.putStreamEntry(zipStream, "xl/worksheets/sheet" + sheet.getId() + ".xml", sheetData);
+	}
+
+	private static void putStrings(ZipOutputStream zipStream, ArrayList<String> strings) throws IOException {
+		byte[] temp = XLSUtils.getStrings(strings);
+		ZipUtils.putStreamEntry(zipStream, "xl/sharedStrings.xml", temp);
+	}
+
+	public synchronized void close() {
+		this.defaultSheet.clear();
+		this.defaultSheet = null;
+		for (Sheet sheet : sheets) {
+			sheet.clear();
+		}
+		this.sheets = null;
+	}
+
+	public Sheet addSheet(String name) {
+		Sheet sheet = new Sheet(name, sheets.length + 1);
+		Sheet[] temp = new Sheet[sheets.length + 1];
+		System.arraycopy(sheets, 0, temp, 0, sheets.length);
+		temp[sheets.length] = sheet;
+		sheets = temp;
+		if (logger.isDebugEnabled())
+			logger.debug("Add sheet:{}, total:{}", sheet.getName(), temp.length);
+		return sheet;
 	}
 
 }

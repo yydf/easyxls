@@ -14,10 +14,8 @@
 		</vt:vector>
 	</HeadingPairs>
 	<TitlesOfParts>
-		<vt:vector size="3" baseType="lpstr">
-			<vt:lpstr>Sheet1</vt:lpstr>
-			<vt:lpstr>Sheet2</vt:lpstr>
-			<vt:lpstr>Sheet3</vt:lpstr>
+		<vt:vector size="%d" baseType="lpstr">
+			%s
 		</vt:vector>
 	</TitlesOfParts>
 </Properties>

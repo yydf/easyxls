@@ -16,7 +16,7 @@ public class AppTest extends TestCase {
 		w.addTitle("订单");
 		w.addData("sdf", 1214);
 		w.addData("sdf", 679);
-		w.write(new FileOutputStream(new File("d://sdf.xls")));
+		w.write(new FileOutputStream(new File("d://sdf.xlsx")));
 		w.close();
 	}
 }
