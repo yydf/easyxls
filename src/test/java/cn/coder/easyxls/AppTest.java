@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import junit.framework.TestCase;
-
 /**
  * Unit test for simple App.
  */
-public class AppTest extends TestCase {
+public class AppTest {
 	public static void main(String[] args) throws FileNotFoundException {
 		Workbook w = new Workbook("test");
 		w.addTitle("删掉");
