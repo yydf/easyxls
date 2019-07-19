@@ -99,9 +99,9 @@ public final class XLSUtils {
 				sb2.append(str);
 				sb2.append("</t></si>");
 			}
-			return String.format(resource, strings.size(), sb2.toString()).getBytes();
+			return String.format(resource, strings.size(), sb2.toString()).getBytes("utf-8");
 		}
-		return String.format(resource, 0, "").getBytes();
+		return String.format(resource, 0, "").getBytes("utf-8");
 	}
 
 	private static String getResource(String name) throws IOException {
