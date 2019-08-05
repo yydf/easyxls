@@ -77,7 +77,9 @@ public final class XLSUtils {
 				// 首行加粗
 				if (row.getId() == 1)
 					body.append("\" s=\"1");
-				if (arr[i] instanceof String) {
+				if (arr[i] == null) {
+					body.append("\"><v></v></c>");
+				} else if (arr[i] instanceof String) {
 					body.append("\" t=\"s\"><v>");
 					body.append(getString(strings, arr[i].toString())).append("</v></c>");
 				} else {
