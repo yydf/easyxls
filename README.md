@@ -21,6 +21,9 @@
 </dependency>
 ```
 
+* 效果:
+![image](https://raw.githubusercontent.com/yydf/easyxls/master/result.jpg)
+
 * 编码:
 
 ```
@@ -37,6 +40,8 @@ sheet.addTitle("大小");
 sheet.addTitle("多少");
 sheet.addData("sdfsdg", 234, "abc");
 sheet.addData("sdfsdg2", 2234, "abcd");
+
+//保存
 w.write(new FileOutputStream(new File("d://sdff.xlsx")));
 w.close();
 ```
