@@ -23,7 +23,7 @@ public final class XLSUtils {
 		StringBuilder str = new StringBuilder();
 		for (Sheet sheet : sheets) {
 			str.append("<vt:lpstr>");
-			str.append(sheet.getName());
+			str.append(safeWords(sheet.getName()));
 			str.append("</vt:lpstr>");
 		}
 		return String.format(resource, sheets.length, str).getBytes("utf-8");
@@ -34,7 +34,7 @@ public final class XLSUtils {
 		StringBuilder sheets = new StringBuilder();
 		for (Sheet sheet : sheetArray) {
 			sheets.append("<sheet name=\"");
-			sheets.append(sheet.getName());
+			sheets.append(safeWords(sheet.getName()));
 			sheets.append("\" sheetId=\"");
 			sheets.append(sheet.getId());
 			sheets.append("\" r:id=\"rId");
@@ -43,6 +43,12 @@ public final class XLSUtils {
 		}
 		sb.append(String.format(XML_WORKBOOK, sheets));
 		return sb.toString().getBytes("utf-8");
+	}
+
+	private static String safeWords(String str) {
+		if(str != null)
+			return str.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+		return str;
 	}
 
 	public static byte[] getWorkbookRels(Sheet[] sheets) throws IOException {
@@ -98,7 +104,7 @@ public final class XLSUtils {
 			StringBuilder sb2 = new StringBuilder();
 			for (String str : strings) {
 				sb2.append("<si><t>");
-				sb2.append(str);
+				sb2.append(safeWords(str));
 				sb2.append("</t></si>");
 			}
 			return String.format(resource, strings.size(), sb2.toString()).getBytes("utf-8");
